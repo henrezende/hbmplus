@@ -1,0 +1,11 @@
+version: "3"
+services:
+  hbm-simulator:
+    container_name: hbm_simulator
+    build:
+      context: ./hbm_simulator
+    volumes:
+      - ./hbm_simulator:/usr/src/app
+      - /usr/src/app/node_modules
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
