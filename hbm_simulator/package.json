@@ -5,7 +5,6 @@
   "author": "Henrique Rezende",
   "license": "MIT",
   "scripts": {
-    "start:server": "node src/server.js",
     "start": "node index.js"
   },
   "dependencies": {
