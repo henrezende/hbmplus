@@ -16,7 +16,14 @@ function promisify(client) {
 }
 
 const protoObject = protoLoader.loadSync(
-  path.resolve(__dirname, "../proto/hbm.proto")
+  path.resolve(__dirname, "../proto/hbm.proto"),
+  {
+    keepCase: true,
+    longs: String,
+    enums: String,
+    defaults: true,
+    oneofs: true,
+  }
 );
 const NotesDefinition = grpc.loadPackageDefinition(protoObject);
 
@@ -26,19 +33,6 @@ const client = new NotesDefinition.HbmService(
 );
 promisify(client);
 
-const clientCall = client.sendHbmData();
-clientCall.on("data", function (response) {
-  console.log("client call: ", response);
-});
-
-clientCall.on("error", function (error) {
-  console.log(error.code, " -> ", error.details);
-});
-
-clientCall.on("end", function () {
-  console.log(`Closed`);
-});
-
 module.exports = {
-  clientCall: clientCall,
+  client: client,
 };

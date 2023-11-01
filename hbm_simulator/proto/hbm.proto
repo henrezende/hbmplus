@@ -2,6 +2,8 @@ syntax = "proto3";
 
 service HbmService {
 	rpc SendHbmData (stream  HbmDataRequest) returns (stream Void) {};
+	rpc StartNormalMeasurement (Void) returns (Void);
+	rpc StopMeasurement (Void) returns (Void);
 }
 
 message Void {}
