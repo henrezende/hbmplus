@@ -8,7 +8,7 @@ async function run() {
     grpc.ServerCredentials.createInsecure(),
     () => {
       server.start();
-      console.log("Listening");
+      console.log("Simulator started");
     }
   );
 }

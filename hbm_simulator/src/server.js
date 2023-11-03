@@ -6,18 +6,11 @@ const handler = require("./handler");
 const protoObject = protoLoader.loadSync(
   path.resolve(__dirname, "../proto/hbm.proto")
 );
-const NotesDefinition = grpc.loadPackageDefinition(protoObject);
+const HbmDefinition = grpc.loadPackageDefinition(protoObject);
 
 const server = new grpc.Server();
-server.addService(NotesDefinition.HbmService.service, {
-  sendHbmData: (call, _) => {
-    call.on("data", async (data) => {
-      console.log("Sending HBM Data: ", data);
-    });
-    call.on("status", async () => {
-      console.log("Ended HBM Data");
-    });
-  },
+server.addService(HbmDefinition.HbmService.service, {
+  sendIrregularityAlert: (call, _) => handler.sendIrregularityAlert(call),
 
   startNormalMeasurement: (call, callback) =>
     handler.startNormalMeasurement(call, callback),
