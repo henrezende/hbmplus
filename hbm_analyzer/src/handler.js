@@ -6,6 +6,7 @@ const MEASURE_COUNT_LIMIT = 60;
 const PERCENTUAL_DIFF_LIMIT = 20;
 let irregularityCount = 0;
 let measuresCountSinceLastIrregularity = 0;
+let anAlertWasSent = false;
 
 function getExpectedMilivoltsValue(milisecond) {
   const milivolt =
@@ -24,15 +25,6 @@ function getPercentualDiffBetweenValues(currentValue, expectedValue) {
   );
 }
 
-function handleIrregularity() {
-  irregularityCount++;
-  measuresCountSinceLastIrregularity = 0;
-
-  if (irregularityCount === IRREGULARITY_LIMIT_TO_SEND_ALERT) {
-    handleSendIrregularityAlert("BIP");
-  }
-}
-
 function handleSendIrregularityAlert(message) {
   let metadata = new grpc.Metadata();
   metadata.add("message", message);
@@ -48,9 +40,27 @@ function handleSendIrregularityAlert(message) {
   );
 }
 
-function handleMeasureCount() {
-  if (measuresCountSinceLastIrregularity >= MEASURE_COUNT_LIMIT) {
+function handleIrregularity() {
+  irregularityCount++;
+  measuresCountSinceLastIrregularity = 0;
+
+  if (
+    irregularityCount === IRREGULARITY_LIMIT_TO_SEND_ALERT &&
+    !anAlertWasSent
+  ) {
+    anAlertWasSent = true;
+    handleSendIrregularityAlert("BIP");
+  }
+}
+
+function handleMeasure() {
+  if (
+    measuresCountSinceLastIrregularity >= MEASURE_COUNT_LIMIT &&
+    anAlertWasSent
+  ) {
+    irregularityCount = 0;
     measuresCountSinceLastIrregularity = 0;
+    anAlertWasSent = false;
     handleSendIrregularityAlert("BIP BIP BIP");
   } else {
     measuresCountSinceLastIrregularity++;
@@ -58,15 +68,8 @@ function handleMeasureCount() {
 }
 
 function analyzeData(call, data) {
-  console.log("=========");
-  console.log("irregularityCount: ", irregularityCount);
-  console.log(
-    "measuresCountSinceLastIrregularity: ",
-    measuresCountSinceLastIrregularity
-  );
-
   if (irregularityCount > 0) {
-    handleMeasureCount();
+    handleMeasure();
   }
 
   const expectedMilivoltValue = getExpectedMilivoltsValue(
