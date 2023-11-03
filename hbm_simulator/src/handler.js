@@ -2,7 +2,7 @@ const { client } = require("./client");
 
 let measurementInterval = null;
 let milisecond = 0;
-const MEASURE_MILISECOND_RATE = 100;
+const MEASURE_MILISECOND_RATE = 10;
 
 function generateData(willGenerateIrregular) {
   let milivolt =
@@ -14,7 +14,7 @@ function generateData(willGenerateIrregular) {
 
   if (willGenerateIrregular) {
     const randomInteger = Math.floor(Math.random() * 100);
-    if (randomInteger > 95) {
+    if (randomInteger > 94) {
       milivolt = milivolt * 1.3;
     }
   }
