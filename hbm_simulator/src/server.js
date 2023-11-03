@@ -12,8 +12,10 @@ const server = new grpc.Server();
 server.addService(HbmDefinition.HbmService.service, {
   sendIrregularityAlert: (call, _) => handler.sendIrregularityAlert(call),
 
-  startNormalMeasurement: (call, callback) =>
-    handler.startNormalMeasurement(call, callback),
+  startNormalMeasurement: (call, _) => handler.startNormalMeasurement(call),
+
+  startIrregularMeasurement: (call, _) =>
+    handler.startIrregularMeasurement(call),
 
   stopMeasurement: (call, _) => handler.stopMeasurement(call),
 });
