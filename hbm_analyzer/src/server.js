@@ -15,9 +15,6 @@ server.addService(HbmDefinition.HbmService.service, {
     call.on("data", async (data) => {
       handler.analyzeData(call, data);
     });
-    call.on("end", async () => {
-      console.log("Ended HBM Data");
-    });
   },
 });
 
