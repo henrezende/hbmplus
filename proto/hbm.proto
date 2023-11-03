@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+service HbmService {
+	rpc SendHbmData (stream  HbmDataRequest) returns (stream Void) {};
+	rpc StartNormalMeasurement (Void) returns (Void);
+	rpc StopMeasurement (Void) returns (Void);
+}
+
+message Void {}
+
+message HbmData {
+	float x = 1;
+	float y = 2;
+}
+
+message HbmDataRequest {
+	HbmData hbmData = 1;
+}

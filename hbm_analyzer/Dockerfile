@@ -1,8 +1,9 @@
-FROM elixir:latest
+FROM node:18-alpine
 
-RUN mix local.hex --force && \
-    mix local.rebar --force
+WORKDIR /usr/src/app
 
+COPY package.json .
+RUN npm install
 COPY . .
 
-RUN mix do deps.get, deps.compile
+CMD [ "npm", "start" ]
