@@ -2,6 +2,7 @@ syntax = "proto3";
 
 service HbmService {
 	rpc SendHbmData (stream  HbmDataRequest) returns (stream Void) {};
+	rpc SendIrregularityAlert (HbmAlertRequest) returns (Void) {};
 }
 
 message Void {}
@@ -15,13 +16,6 @@ message HbmDataRequest {
 	HbmData hbmData = 1;
 }
 
-message HbmAlert {
-	string message = 1;
-}
-
 message HbmAlertRequest {
 	string message = 1;
 }
-// message HbmAlertRequest {
-// 	HbmAlert hbmAlert = 1;
-// }
