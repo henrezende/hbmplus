@@ -1,8 +1,11 @@
 const grpc = require("@grpc/grpc-js");
 const { client } = require("./client");
 
-let irregularityCountInTheLast60Measures = 0;
-let measuresCount = 0;
+const IRREGULARITY_LIMIT_TO_SEND_ALERT = 5;
+const MEASURE_COUNT_LIMIT = 60;
+const PERCENTUAL_DIFF_LIMIT = 20;
+let irregularityCount = 0;
+let measuresCountSinceLastIrregularity = 0;
 
 function getExpectedMilivoltsValue(milisecond) {
   const milivolt =
@@ -22,14 +25,15 @@ function getPercentualDiffBetweenValues(currentValue, expectedValue) {
 }
 
 function handleIrregularity() {
-  irregularityCountInTheLast60Measures++;
+  irregularityCount++;
+  measuresCountSinceLastIrregularity = 0;
 
-  if (irregularityCountInTheLast60Measures === 5) {
-    sendIrregularityAlert("BIP");
+  if (irregularityCount === IRREGULARITY_LIMIT_TO_SEND_ALERT) {
+    handleSendIrregularityAlert("BIP");
   }
 }
 
-function sendIrregularityAlert(message) {
+function handleSendIrregularityAlert(message) {
   let metadata = new grpc.Metadata();
   metadata.add("message", message);
   client.sendIrregularityAlert(
@@ -45,23 +49,23 @@ function sendIrregularityAlert(message) {
 }
 
 function handleMeasureCount() {
-  if (measuresCount >= 60) {
-    measuresCount = 0;
-    irregularityCountInTheLast60Measures = 0;
-    sendIrregularityAlert("BIP BIP BIP");
+  if (measuresCountSinceLastIrregularity >= MEASURE_COUNT_LIMIT) {
+    measuresCountSinceLastIrregularity = 0;
+    handleSendIrregularityAlert("BIP BIP BIP");
   } else {
-    measuresCount++;
+    measuresCountSinceLastIrregularity++;
   }
 }
 
 function analyzeData(call, data) {
+  console.log("=========");
+  console.log("irregularityCount: ", irregularityCount);
   console.log(
-    "irregularityCountInTheLast60Measures: ",
-    irregularityCountInTheLast60Measures
+    "measuresCountSinceLastIrregularity: ",
+    measuresCountSinceLastIrregularity
   );
-  console.log("measuresCount: ", measuresCount);
 
-  if (irregularityCountInTheLast60Measures > 0) {
+  if (irregularityCount > 0) {
     handleMeasureCount();
   }
 
@@ -74,7 +78,7 @@ function analyzeData(call, data) {
     expectedMilivoltValue
   );
 
-  if (percentualDiff > 20) {
+  if (percentualDiff > PERCENTUAL_DIFF_LIMIT) {
     handleIrregularity();
   }
 
