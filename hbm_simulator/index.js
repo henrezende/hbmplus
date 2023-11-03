@@ -1,5 +1,4 @@
 const grpc = require("@grpc/grpc-js");
-const { client } = require("./src/client");
 const server = require("./src/server");
 
 async function run() {
