@@ -3,7 +3,7 @@ const protoLoader = require("@grpc/proto-loader");
 const path = require("path");
 
 const protoObject = protoLoader.loadSync(
-  path.resolve(__dirname, "../proto/hbm.proto"),
+  path.resolve(__dirname, "../proto/hbm_simulator.proto"),
   {
     keepCase: true,
     longs: String,
@@ -15,7 +15,7 @@ const protoObject = protoLoader.loadSync(
 const HbmDefinition = grpc.loadPackageDefinition(protoObject);
 
 const client = new HbmDefinition.HbmService(
-  "0.0.0.0:50052",
+  "hbm-analyzer:50052",
   grpc.credentials.createInsecure()
 );
 
