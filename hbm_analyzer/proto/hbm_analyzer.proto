@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+service HbmService {
+	rpc SendHbmData (stream  HbmDataRequest) returns (stream Void) {};
+	rpc SendIrregularityAlert (HbmAlertRequest) returns (Void) {};
+	rpc ListAllIrregularities (Void) returns (ListIrregularitiesReturn) {};
+	rpc ListAllMeasuresFromTheLast30Days (Void) returns (ListAllMeasuresFromTheLast30DaysReturn) {};
+}
+
+message Void {}
+
+message HbmData {
+	float milisecond = 1;
+	float milivolt = 2;
+}
+
+message HbmDataRequest {
+	HbmData hbmData = 1;
+}
+
+message HbmAlertRequest {
+	string message = 1;
+}
+
+message MeasureData {
+	float milivoltExpected = 1;
+	float milivoltMeasured = 2;
+	float milisecond = 3;
+	float percentualDifference = 4;
+	bool isIrregular = 5;
+}
+
+message Irregularity {
+	string startedAt = 1;
+	string finishedAt = 2;
+}
+
+message ListIrregularitiesReturn {
+	repeated Irregularity irregularities = 1;
+}
+
+message ListAllMeasuresFromTheLast30DaysReturn {
+	repeated MeasureData measures = 1;
+}
