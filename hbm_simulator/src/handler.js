@@ -2,7 +2,7 @@ const { client } = require("./client");
 
 let measurementInterval = null;
 let milisecond = 0;
-const MEASURE_MILISECOND_RATE = 10;
+const MEASURE_MILISECOND_RATE = 100;
 
 function generateData(willGenerateIrregular) {
   let milivolt =
@@ -53,9 +53,31 @@ function sendIrregularityAlert(call) {
   console.log(call.request.message);
 }
 
+function listAllIrregularities(call) {
+  client.listAllIrregularities({}, (err, response) => {
+    if (err) {
+      console.log("error: ", err);
+    }
+    console.log("response: ", response);
+  });
+  call.end();
+}
+
+function listAllMeasuresFromTheLast30Days(call) {
+  client.listAllMeasuresFromTheLast30Days({}, (err, response) => {
+    if (err) {
+      console.log("error: ", err);
+    }
+    console.log("response: ", response);
+  });
+  call.end();
+}
+
 module.exports = {
   startNormalMeasurement,
   startIrregularMeasurement,
   stopMeasurement,
   sendIrregularityAlert,
+  listAllIrregularities,
+  listAllMeasuresFromTheLast30Days,
 };
