@@ -1,7 +1,49 @@
 version: "3"
 services:
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    restart: always
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME=user
+      - MONGODB_INITDB_ROOT_PASSWORD=pass
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db
+
+  mongo-express:
+    container_name: mongo-express
+    image: mongo-express
+    ports:
+      - 8081:8081
+    expose:
+      - 8081
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: user
+      ME_CONFIG_BASICAUTH_PASSWORD: pass
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ADMINUSERNAME: user
+      ME_CONFIG_MONGODB_ADMINPASSWORD: pass
+    depends_on:
+      - mongo
+
+  hbm-analyzer:
+    container_name: hbm-analyzer
+    build:
+      context: ./hbm_analyzer
+    volumes:
+      - ./hbm_analyzer:/usr/src/app
+      - /usr/src/app/node_modules
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
+    ports:
+      - 50052:50051
+    depends_on:
+      - mongo
+
   hbm-simulator:
-    container_name: hbm_simulator
+    container_name: hbm-simulator
     build:
       context: ./hbm_simulator
     volumes:
@@ -11,3 +53,5 @@ services:
       - "host.docker.internal:172.17.0.1"
     ports:
       - 50051:50051
+    depends_on:
+      - hbm-analyzer
