@@ -4,7 +4,7 @@ const path = require("path");
 const handler = require("./handler");
 
 const protoObject = protoLoader.loadSync(
-  path.resolve(__dirname, "../proto/hbm.proto")
+  path.resolve(__dirname, "../proto/hbm_analyzer.proto")
 );
 const HbmDefinition = grpc.loadPackageDefinition(protoObject);
 
@@ -16,6 +16,12 @@ server.addService(HbmDefinition.HbmService.service, {
       handler.analyzeData(call, data);
     });
   },
+
+  listAllMeasuresFromTheLast30Days: (_, callback) =>
+    handler.listAllMeasuresFromTheLast30Days(callback),
+
+  listAllIrregularities: (_, callback) =>
+    handler.listAllIrregularities(callback),
 });
 
 module.exports = server;

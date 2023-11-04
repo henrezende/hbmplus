@@ -1,5 +1,7 @@
 const grpc = require("@grpc/grpc-js");
 const { client } = require("./client");
+const measurementRepository = require("../repositories/measurement-repository");
+const irregularityRepository = require("../repositories/irregularity-repository");
 
 const IRREGULARITY_LIMIT_TO_SEND_ALERT = 5;
 const MEASURE_COUNT_LIMIT = 60;
@@ -40,7 +42,7 @@ function handleSendIrregularityAlert(message) {
   );
 }
 
-function handleIrregularity() {
+async function handleIrregularity() {
   irregularityCount++;
   measuresCountSinceLastIrregularity = 0;
 
@@ -50,10 +52,13 @@ function handleIrregularity() {
   ) {
     anAlertWasSent = true;
     handleSendIrregularityAlert("BIP");
+    await irregularityRepository.createIrregularity({
+      startedAt: Date.now(),
+    });
   }
 }
 
-function handleMeasure() {
+async function handleMeasure() {
   if (
     measuresCountSinceLastIrregularity >= MEASURE_COUNT_LIMIT &&
     anAlertWasSent
@@ -62,12 +67,15 @@ function handleMeasure() {
     measuresCountSinceLastIrregularity = 0;
     anAlertWasSent = false;
     handleSendIrregularityAlert("BIP BIP BIP");
+    await irregularityRepository.setFinishedDateOnTheLastIrregularity();
   } else {
     measuresCountSinceLastIrregularity++;
   }
 }
 
-function analyzeData(call, data) {
+async function analyzeData(call, data) {
+  let currentMeasureIsIrregular = false;
+
   if (irregularityCount > 0) {
     handleMeasure();
   }
@@ -82,12 +90,34 @@ function analyzeData(call, data) {
   );
 
   if (percentualDiff > PERCENTUAL_DIFF_LIMIT) {
+    currentMeasureIsIrregular = true;
     handleIrregularity();
   }
+
+  await measurementRepository.createMeasurement({
+    milivoltExpected: expectedMilivoltValue,
+    milivoltMeasured: data.hbmData.milivolt,
+    milisecond: data.hbmData.milisecond,
+    percentualDifference: percentualDiff,
+    isIrregular: currentMeasureIsIrregular,
+  });
 
   call.end();
 }
 
+async function listAllMeasuresFromTheLast30Days(callback) {
+  const response =
+    await measurementRepository.listAllMeasuresFromTheLast30Days();
+  callback(null, { measures: response });
+}
+
+async function listAllIrregularities(callback) {
+  const response = await irregularityRepository.listAllIrregularities();
+  callback(null, { irregularities: response });
+}
+
 module.exports = {
   analyzeData,
+  listAllMeasuresFromTheLast30Days,
+  listAllIrregularities,
 };
