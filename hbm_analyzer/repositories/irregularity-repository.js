@@ -15,6 +15,6 @@ exports.setFinishedDateOnTheLastIrregularity = async () => {
   await Irregularities.findOneAndUpdate(
     {},
     { $set: { finishedAt: new Date() } },
-    { sort: { createdAt: -1 }, new: true }
+    { sort: { startedAt: -1 }, new: true }
   ).exec();
 };
