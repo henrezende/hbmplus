@@ -15,5 +15,5 @@ exports.listAllMeasuresFromTheLast30Days = async () => {
 
 exports.createMeasurement = async (data) => {
   const measurement = new Measurements(data);
-  await measurement.save();
+  return await measurement.save();
 };
