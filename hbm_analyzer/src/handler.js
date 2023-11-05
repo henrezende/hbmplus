@@ -1,11 +1,13 @@
 const grpc = require("@grpc/grpc-js");
 const { client } = require("./client");
-const measurementRepository = require("../repositories/measurement-repository");
-const irregularityRepository = require("../repositories/irregularity-repository");
+const measurementRepository = require("../repositories/measurementRepository");
+const irregularityRepository = require("../repositories/irregularityRepository");
+const {
+  IRREGULARITY_LIMIT_TO_SEND_ALERT,
+  MEASURE_COUNT_LIMIT,
+  PERCENTUAL_DIFF_LIMIT,
+} = require("../config/constants");
 
-const IRREGULARITY_LIMIT_TO_SEND_ALERT = 5;
-const MEASURE_COUNT_LIMIT = 60;
-const PERCENTUAL_DIFF_LIMIT = 20;
 let irregularityCount = 0;
 let measuresCountSinceLastIrregularity = 0;
 let anAlertWasSent = false;
@@ -117,6 +119,8 @@ async function listAllIrregularities(callback) {
 }
 
 module.exports = {
+  getExpectedMilivoltsValue,
+  getPercentualDiffBetweenValues,
   analyzeData,
   listAllMeasuresFromTheLast30Days,
   listAllIrregularities,
