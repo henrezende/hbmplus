@@ -7,7 +7,7 @@ Diagrama:
 ![Screenshot from 2023-11-04 16-03-46](https://github.com/henrezende/hbmplus/assets/39440402/bf77844e-c69a-4e1f-a1f0-58222b979685)
 
 
-## Como testar
+## Como rodar
 
 Na raiz, execute:
 `docker compose up --build -d`
@@ -62,3 +62,6 @@ O analisador segue a seguinte regra:
 |         30          |         4          |         false          |                   3                    |                                      |
 |         60          |         4          |         false          |                   30                   |                                      |
 | <strong>90</strong> | <strong>4</strong> | <strong>false</strong> |          <strong>60</strong>           | <strong>NÃO ENVIA BIPBIPBIP</strong> |
+
+## Tests
+Entre individualmente nas pastas `hbm_analyzer` ou `hbm_simulator` e rode `npm tests`
