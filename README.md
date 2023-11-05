@@ -4,7 +4,8 @@ Um simulador de monitor cardíaco, usando Node.js, MongoDB e Docker.
 Há um serviço hbm-simulator que se comunica com o hbm-analyzer via gRPC, o simulador envia as medidas para o analisador, que envia os dados para o MongoDB.
 
 Diagrama:
-![Screenshot from 2023-11-04 16-03-46](https://github.com/henrezende/hbmplus/assets/39440402/bf77844e-c69a-4e1f-a1f0-58222b979685)
+![Screenshot from 2023-11-05 18-34-46](https://github.com/henrezende/hbmplus/assets/39440402/31bc336c-4fbd-47a2-b0ce-df5aa6506334)
+
 
 
 ## Como rodar
