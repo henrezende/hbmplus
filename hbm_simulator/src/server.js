@@ -10,7 +10,7 @@ const HbmDefinition = grpc.loadPackageDefinition(protoObject);
 
 const server = new grpc.Server();
 server.addService(HbmDefinition.HbmService.service, {
-  sendIrregularityAlert: (call, _) => handler.sendIrregularityAlert(call),
+  sendIrregularityAlert: (call, _) => handler.showIrregularityAlert(call),
 
   startNormalMeasurement: (call, _) => handler.startNormalMeasurement(call),
 

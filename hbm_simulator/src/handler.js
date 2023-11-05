@@ -5,6 +5,8 @@ let milisecond = 0;
 const MEASURE_MILISECOND_RATE = 100;
 
 function generateData(willGenerateIrregular) {
+  let randomLimit = 94;
+
   let milivolt =
     -0.06366 +
     0.12613 * Math.cos((Math.PI * milisecond) / 500) +
@@ -14,7 +16,12 @@ function generateData(willGenerateIrregular) {
 
   if (willGenerateIrregular) {
     const randomInteger = Math.floor(Math.random() * 100);
-    if (randomInteger > 94) {
+
+    if (process.env.NODE_ENV) {
+      randomLimit = 0;
+    }
+
+    if (randomInteger >= randomLimit) {
       milivolt = milivolt * 1.3;
     }
   }
@@ -27,21 +34,29 @@ function generateData(willGenerateIrregular) {
 function startNormalMeasurement(call) {
   milisecond = 0;
 
-  measurementInterval = setInterval(() => {
-    client.sendHbmData().write({ hbmData: generateData(false) });
-  }, MEASURE_MILISECOND_RATE);
+  if (process.env.NODE_ENV !== "test") {
+    measurementInterval = setInterval(() => {
+      client.sendHbmData().write({ hbmData: generateData(false) });
+    }, MEASURE_MILISECOND_RATE);
 
-  call.end();
+    call.end();
+  } else {
+    return generateData(false);
+  }
 }
 
 function startIrregularMeasurement(call) {
   milisecond = 0;
 
-  measurementInterval = setInterval(() => {
-    client.sendHbmData().write({ hbmData: generateData(true) });
-  }, MEASURE_MILISECOND_RATE);
+  if (process.env.NODE_ENV !== "test") {
+    measurementInterval = setInterval(() => {
+      client.sendHbmData().write({ hbmData: generateData(true) });
+    }, MEASURE_MILISECOND_RATE);
 
-  call.end();
+    call.end();
+  } else {
+    return generateData(true);
+  }
 }
 
 function stopMeasurement(call) {
@@ -49,7 +64,7 @@ function stopMeasurement(call) {
   call.end();
 }
 
-function sendIrregularityAlert(call) {
+function showIrregularityAlert(call) {
   console.log(call.request.message);
 }
 
@@ -77,7 +92,7 @@ module.exports = {
   startNormalMeasurement,
   startIrregularMeasurement,
   stopMeasurement,
-  sendIrregularityAlert,
+  showIrregularityAlert,
   listAllIrregularities,
   listAllMeasuresFromTheLast30Days,
 };
